@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "./components/ui/select";
 import { Slider } from "./components/ui/slider";
+import { VideoInputForm } from "./components/video-input-form";
 
 export function App() {
   return (
@@ -19,7 +20,7 @@ export function App() {
         <h1 className="text-xl font-bold">Upload.ia</h1>
         <div className="flex items-center gap-3 ">
           <span className="text-sm text-muted-foreground">
-            Developed with love for Marcelo
+            Developed with love by Marcelo
           </span>
           <Separator orientation="vertical" className="h-6" />
           <Button variant={"outline"}>
@@ -48,82 +49,7 @@ export function App() {
           </p>
         </div>
         <aside className="w-80 space-y-6">
-          <form className="space-y-6">
-            <label
-              htmlFor="video"
-              className="border flex rounded-md aspect-video cursor-pointer border-dashed text-sm flex-col gap-2 items-center justify-center text-muted-foreground hover:bg-primary/5"
-            >
-              <FileVideo className="h-4 w-4" />
-              Upload Video{" "}
-            </label>
-            <input
-              type="file"
-              name="video"
-              id="video"
-              accept="video/mp4"
-              className="sr-only"
-            />
-            <Separator />
-            <div className="space-y-4">
-              <Label htmlFor="transcription_prompt">Transcription Prompt</Label>
-              <Textarea
-                id="transcription_prompt"
-                className="h-20 leading-relaxed resize-none"
-                placeholder="Insert keywords cited on the video spaced by comma (,)"
-              />
-            </div>
-            <Button type="submit" className="w-full">
-              Upload Video
-              <Upload className="h-4 w-4" />
-            </Button>
-          </form>
-          <Separator />
-          <form action="" className="space-y-6">
-            <div className="space-y-2">
-              <Label>Prompt</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a prompt..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={"title"}>Title for Youtube</SelectItem>
-                  <SelectItem value={"description"}>
-                    Description for Youtube
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="block text-xs text-muted-foreground italic">
-                You can customize this option soon
-              </span>
-            </div>
-            <div className="space-y-2">
-              <Label>Model</Label>
-              <Select defaultValue="gpt3.5" disabled>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={"gpt3.5"}>GPT 3.5-trubo 16k</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="block text-xs text-muted-foreground italic">
-                You can customize this option soon
-              </span>
-            </div>
-            <Separator />
-            <div className="space-y-4">
-              <Label>Temperature</Label>
-              <Slider min={0} max={1} step={0.1} />
-              <span className="block text-xs text-muted-foreground italic leading-relaxed">
-                You can customize this option soon
-              </span>
-            </div>
-            <Separator />
-            <Button type="submit">
-              Play
-              <Wand2 className="h-4 w-4 " />
-            </Button>
-          </form>
+          <VideoInputForm />
         </aside>
       </main>
     </div>

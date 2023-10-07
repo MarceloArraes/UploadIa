@@ -17,4 +17,9 @@
                     />
     </form>
 - Its possible to change the opacity of any color like this:
+
   - hover:bg-primary/5
+
+- using shadcn ui for components done with Radix and tailwind. Very easy to modify.
+- Semantic <aside> for lateral column
+- lucide-react for icons
