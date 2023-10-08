@@ -68,11 +68,8 @@ export const VideoInputForm = () => {
   const handleUploadVideo = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // const prompt = promptInputRef?.current?.value;
-
     if (!videoFile) return;
 
-    // :D :D :) :)
     const audioFile = await convertVideoToAudio(videoFile);
 
     const data = new FormData();
@@ -80,12 +77,22 @@ export const VideoInputForm = () => {
     data.append("file", audioFile);
     const response = await api.post("/videos", data);
     console.log("response ", response.data);
+
+    const videoId = response.data.video.id;
+
+    const prompt = promptInputRef?.current?.value;
+    await api.post(`/videos/${videoId}/transcription`, {
+      prompt,
+    });
+    console.log("finished transcription");
   };
+
   const previewURL = useMemo(() => {
     if (!videoFile) return null;
 
     return URL.createObjectURL(videoFile);
   }, [videoFile]);
+
   return (
     <>
       <form className="space-y-6" onSubmit={handleUploadVideo}>
