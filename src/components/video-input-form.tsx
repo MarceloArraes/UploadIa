@@ -68,7 +68,7 @@ export const VideoInputForm = () => {
   const handleUploadVideo = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const prompt = promptInputRef?.current?.value;
+    // const prompt = promptInputRef?.current?.value;
 
     if (!videoFile) return;
 
