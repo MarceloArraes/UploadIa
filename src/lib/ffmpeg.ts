@@ -1,5 +1,8 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { toBlobURL } from "@ffmpeg/util";
+
+import coreURL from "../ffmpeg/ffmpeg-core.js?url";
+import wasmURL from "../ffmpeg/ffmpeg-core.wasm?url";
+import workerURL from "../ffmpeg/ffmpeg.worker.js?url";
 
 let ffmpeg: FFmpeg | null;
 
@@ -9,13 +12,10 @@ export async function loadFfmpeg() {
   ffmpeg = new FFmpeg();
 
   if (!ffmpeg.loaded) {
-    const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.2/dist/esm";
     await ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-      wasmURL: await toBlobURL(
-        `${baseURL}/ffmpeg-core.wasm`,
-        "application/wasm"
-      ),
+      coreURL,
+      wasmURL,
+      workerURL,
     });
   }
 
