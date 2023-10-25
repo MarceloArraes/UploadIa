@@ -1,24 +1,49 @@
-import { Label } from "@radix-ui/react-label";
+import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
+import { Label } from "@/components/ui/label";
 import {
-  Separator,
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@radix-ui/react-select";
-import { Slider } from "@radix-ui/react-slider";
+} from "@/components/ui/select";
+import { Separator } from "@radix-ui/react-select";
+import { Slider } from "@/components/ui/slider";
 import { FileVideo, Upload, Wand2 } from "lucide-react";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
-import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { loadFfmpeg } from "@/lib/ffmpeg";
 import { fetchFile } from "@ffmpeg/util";
 import { api } from "@/lib/axios";
+import { PromptSelect } from "./prompt-select";
+
+type Status =
+  | "waiting"
+  | "converting"
+  | "uploading"
+  | "generating"
+  | "success"
+  | "error";
 
 export const VideoInputForm = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const promptInputRef = useRef<HTMLTextAreaElement>(null);
+  const [status, setStatus] = useState<Status>("waiting");
+  const [temperature, setTemperature] = useState(0.5);
+  const [videoId, setVideoId] = useState<string | null>(null);
+
+  const handlePromptSelected = (template: string) => {
+    console.log("handlePromptSelected ", template);
+  };
+
+  const statusMessages: { [key in Status]: string } = {
+    waiting: "Waiting...",
+    converting: "Converting...",
+    uploading: "Uploading",
+    generating: "Generating",
+    success: "Success",
+    error: "Error",
+  };
 
   const convertVideoToAudio = async (video: File) => {
     console.log("convert started. ");
@@ -69,21 +94,28 @@ export const VideoInputForm = () => {
     event.preventDefault();
 
     if (!videoFile) return;
-
+    setStatus("converting");
     const audioFile = await convertVideoToAudio(videoFile);
 
     const data = new FormData();
 
     data.append("file", audioFile);
+
+    setStatus("uploading");
+
     const response = await api.post("/videos", data);
     console.log("response ", response.data);
 
     const videoId = response.data.video.id;
+    setStatus("generating");
 
     const prompt = promptInputRef?.current?.value;
     await api.post(`/videos/${videoId}/transcription`, {
       prompt,
     });
+    setStatus("success");
+    setVideoId(videoId);
+
     console.log("finished transcription");
   };
 
@@ -126,31 +158,34 @@ export const VideoInputForm = () => {
           <Label htmlFor="transcription_prompt">Transcription Prompt</Label>
           <Textarea
             id="transcription_prompt"
+            disabled={status != "waiting"}
             ref={promptInputRef}
             className="h-20 leading-relaxed resize-none"
             placeholder="Insert keywords cited on the video spaced by comma (,)"
           />
         </div>
-        <Button type="submit" className="w-full">
-          Upload Video
-          <Upload className="h-4 w-4" />
+        <Button
+          data-success={status == "success"}
+          disabled={status != "waiting"}
+          type="submit"
+          className="w-full data-[success=true]:bg-emerald-400"
+        >
+          {status == "waiting" ? (
+            <>
+              {" "}
+              Upload Video
+              <Upload className="h-4 w-4" />
+            </>
+          ) : (
+            statusMessages[status]
+          )}
         </Button>
       </form>
       <Separator />
       <form action="" className="space-y-6">
         <div className="space-y-2">
           <Label>Prompt</Label>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a prompt..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={"title"}>Title for Youtube</SelectItem>
-              <SelectItem value={"description"}>
-                Description for Youtube
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <PromptSelect onPromptSelected={handlePromptSelected} />
           <span className="block text-xs text-muted-foreground italic">
             You can customize this option soon
           </span>
@@ -172,7 +207,13 @@ export const VideoInputForm = () => {
         <Separator />
         <div className="space-y-4">
           <Label>Temperature</Label>
-          <Slider min={0} max={1} step={0.1} />
+          <Slider
+            min={0}
+            max={1}
+            step={0.1}
+            value={[temperature]}
+            onValueChange={(value) => setTemperature(value[0])}
+          />
           <span className="block text-xs text-muted-foreground italic leading-relaxed">
             You can customize this option soon
           </span>
