@@ -49,7 +49,7 @@ export const VideoInputForm = ({}: {}) => {
     completion,
     isLoading,
   } = useCompletion({
-    api: "http://localhost:3333/ai/complete",
+    api: "https://upload-ai-backend.vercel.app/ai/complete",
     body: {
       videoId,
       temperature,
