@@ -1,13 +1,9 @@
 import { Button } from "./components/ui/button";
 import { Github } from "lucide-react";
 import { Separator } from "./components/ui/separator";
-import { Textarea } from "./components/ui/textarea";
 import { VideoInputForm } from "./components/video-input-form";
-import { useState } from "react";
 
 export function App() {
-  const [promptForAi, setPromptForAi] = useState("");
-
   return (
     <div className="min-h-screen flex flex-col">
       <div className="px-6 py-3 flex items-center justify-between border-b">
